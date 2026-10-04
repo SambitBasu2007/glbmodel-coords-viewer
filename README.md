@@ -19,8 +19,11 @@ npm run build    # tsc && vite build
 
 ## GitHub Pages deployment
 
-- This repo deploys through `.github/workflows/deploy-pages.yml` and publishes `dist/`.
-- In **Settings → Pages**, set **Source** to **GitHub Actions**.
+- This repo deploys through [.github/workflows/deploy-pages.yml](.github/workflows/deploy-pages.yml) and publishes the
+  built `dist/` folder. Do not publish the repository root or the `main`/`master` branch directly: the root
+  `index.html` points to TypeScript source and is intended for Vite to process during the build.
+- In **Settings → Pages**, set **Source** to **GitHub Actions**. If **Deploy from a branch** is selected, GitHub
+  Pages will request `/src/main.ts` and the application will remain blank.
 - Project site URL: `https://sambitbasu2007.github.io/glbmodel-coords-viewer/`
 
 ## Using it
