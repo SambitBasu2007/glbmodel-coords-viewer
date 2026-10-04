@@ -14,6 +14,12 @@ npm run dev      # open the printed localhost URL
 npm run build    # tsc && vite build
 ```
 
+## GitHub Pages deployment
+
+- This repo deploys through `.github/workflows/deploy-pages.yml` and publishes `dist/`.
+- In **Settings → Pages**, set **Source** to **GitHub Actions**.
+- Project site URL: `https://sambitbasu2007.github.io/glbmodel-coords-viewer/`
+
 ## Using it
 
 1. Drop `.glb` files into `assets/` (a small sample room ships there) and reload.
