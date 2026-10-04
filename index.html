@@ -8,9 +8,23 @@
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; background: #1d1f23; color: #ddd; font: 13px system-ui, sans-serif; }
   #app { display: grid; grid-template-columns: 1fr 290px; height: 100%; }
+  #app.panel-closed { grid-template-columns: 1fr; }
   #viewport { position: relative; overflow: hidden; min-width: 0; }
   #viewport canvas { display: block; }
+  #loading-screen { position: absolute; inset: 0; z-index: 8; display: grid; place-items: center;
+                    background: rgba(29,31,35,.86); }
+  #loading-screen[hidden] { display: none; }
+  #loading-card { display: grid; justify-items: center; gap: 10px; color: #ddd; text-align: center; }
+  #loading-spinner { width: 34px; height: 34px; border: 3px solid #4a5058; border-top-color: #2c8fff;
+                     border-radius: 50%; animation: loading-spin .8s linear infinite; }
+  #loading-message { max-width: min(90vw, 420px); }
+  @keyframes loading-spin { to { transform: rotate(360deg); } }
   #panel { padding: 12px; overflow-y: auto; background: #26292e; border-left: 1px solid #111; }
+  #app.panel-closed #panel { display: none; }
+  #panel-toggle { position: absolute; top: 50%; right: 0; z-index: 10; width: 24px; height: 54px;
+                  transform: translateY(-50%); padding: 0; border-radius: 5px 0 0 5px;
+                  font-size: 18px; line-height: 1; }
+  #app.panel-closed #panel-toggle { right: 12px; border-radius: 5px; }
   h4 { margin: 14px 0 6px; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: #8a8f98; }
   h4:first-child { margin-top: 0; }
   select, input[type=number], button { background: #353a41; color: #eee; border: 1px solid #4a5058; border-radius: 4px; padding: 5px 8px; font: inherit; }
@@ -37,6 +51,12 @@
 <body>
 <div id="app">
   <div id="viewport">
+    <div id="loading-screen" role="status" aria-live="polite">
+      <div id="loading-card">
+        <div id="loading-spinner" aria-hidden="true"></div>
+        <div id="loading-message">Loading model…</div>
+      </div>
+    </div>
     <div id="topbar">
       <select id="models" title="Switch model"></select>
       <span>Scale</span>
@@ -44,6 +64,8 @@
       <button id="scaleVal" title="Click to reset to 1x">1.00×</button>
     </div>
     <div id="gizmo"></div>
+    <button id="panel-toggle" type="button" aria-controls="panel" aria-expanded="true"
+            title="Close controls panel">›</button>
   </div>
   <aside id="panel">
     <h4>Model</h4>

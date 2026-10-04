@@ -15,6 +15,20 @@ const toBlender = (v: THREE.Vector3) => new THREE.Vector3(v.x, -v.z, v.y);
 
 // ---------- scene ----------
 const viewport = $('viewport');
+const app = $('app');
+const panelToggle = $<HTMLButtonElement>('panel-toggle');
+panelToggle.onclick = () => {
+  const closed = app.classList.toggle('panel-closed');
+  panelToggle.setAttribute('aria-expanded', String(!closed));
+  panelToggle.textContent = closed ? '‹' : '›';
+  panelToggle.title = closed ? 'Open controls panel' : 'Close controls panel';
+};
+const loadingScreen = $('loading-screen');
+const loadingMessage = $('loading-message');
+function setLoading(message: string, loading: boolean) {
+  loadingMessage.textContent = message;
+  loadingScreen.hidden = !loading;
+}
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 viewport.appendChild(renderer.domElement);
@@ -149,6 +163,7 @@ let loadToken = 0; // guards against a slow load finishing after a newer one was
 async function loadModel(url: string, name: string) {
   const token = ++loadToken;
   $('status').textContent = `Loading ${name}…`;
+  setLoading(`Loading ${name}…`, true);
   try {
     const gltf = await loader.loadAsync(url);
     if (token !== loadToken) return; // a newer load started meanwhile: drop this result
@@ -162,9 +177,14 @@ async function loadModel(url: string, name: string) {
     clearPick(); // and with no picked point
     applyScale(); // resets bounds readout at 1x
     $('status').textContent = '';
+    setLoading('', false);
     frame();
   } catch (e) {
-    if (token === loadToken) $('status').textContent = `Failed to load ${name}: ${String(e)}`;
+    if (token === loadToken) {
+      const message = `Failed to load ${name}: ${String(e)}`;
+      $('status').textContent = message;
+      setLoading(message, true);
+    }
   }
 }
 
@@ -174,7 +194,11 @@ for (const p of paths) sel.add(new Option(p.replace('/assets/', ''), p));
 const load = (p: string) => void loadModel(modelUrls[p], p.replace('/assets/', ''));
 $('frame').onclick = frame;
 if (paths.length) { sel.onchange = () => load(sel.value); load(paths[0]); }
-else $('status').textContent = 'No .glb files found. Put them in the /assets folder and reload.';
+else {
+  const message = 'No .glb files found. Put them in the /assets folder and reload.';
+  $('status').textContent = message;
+  setLoading(message, true);
+}
 
 // ---------- picking (click without dragging) ----------
 const dom = renderer.domElement;
